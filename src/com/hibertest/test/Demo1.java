@@ -3,9 +3,11 @@ package com.hibertest.test;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
 import com.hibertest.domain.Customer;
@@ -18,6 +20,25 @@ import com.hibertest.uitls.HibernateUtils;
 	 */
 	public class Demo1 {
 		
+		/**
+		 * criteria的条件查询
+		 */
+		@Test
+		public void run12(){
+			Session session = HibernateUtils.getCurrentSession();
+			Transaction tr = session.beginTransaction();
+			
+			Criteria criteria = session.createCriteria(Linkman.class);
+			
+			//criteria.add(Restrictions.eq("lkm_gender", "男"));//性别为男
+			criteria.add(Restrictions.ge("lkm_id", 3L));//id 大于3
+			
+			List<Linkman> list = criteria.list();
+			for (Linkman linkman : list) {
+				System.out.println(linkman);
+			}
+			tr.commit();
+		}
 		/**
 		 * 聚合函数：求数量
 		 */
@@ -50,6 +71,7 @@ import com.hibertest.uitls.HibernateUtils;
 		
 		/**
 		 * 聚合函数：count() sum() avg() max() min()
+		 * 分页count（*）
 		 */
 		@Test
 		public void run9(){
