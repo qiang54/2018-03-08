@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
@@ -20,6 +22,59 @@ import com.hibertest.uitls.HibernateUtils;
 	 */
 	public class Demo1 {
 		
+		/**
+		 * SQL语句查询（了解，不常用）
+		 */
+		@Test
+		public void run15(){
+			Session session = HibernateUtils.getCurrentSession();
+			Transaction tr = session.beginTransaction();
+			SQLQuery qr = session.createSQLQuery("select * from cst_linkman ");
+			
+			//注意，sql查询结果不是Linkman 对象，而是Object对象，需要设置一下
+			qr.addEntity(Linkman.class);
+			List<Linkman> list = qr.list();
+			for (Linkman linkman : list) {
+				System.out.println(linkman);
+			}
+			tr.commit();
+		}
+		/**
+		 * 离线条件查询
+		 */
+		@Test
+		public void run14(){
+			Session session = HibernateUtils.getCurrentSession();
+			Transaction tr = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Linkman.class);
+			
+			List<Number> list = criteria.setProjection(Projections.count("lkm_id")).list();
+			Long count = list.get(0).longValue();
+			System.out.println(count);
+			
+			//再想查询别的时，必须置空SetProjection
+			criteria.setProjection(null);
+			List list2 = criteria.list();
+			for (Object object : list2) {
+				System.out.println(object);
+			}
+			
+			tr.commit();
+		}
+		/**
+		 * QBC的聚合函数查询
+		 */
+		@Test
+		public void run13(){
+			Session session = HibernateUtils.getCurrentSession();
+			Transaction tr = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Linkman.class);
+			
+			List<Number> list = criteria.setProjection(Projections.count("lkm_id")).list();
+			Long count = list.get(0).longValue();
+			System.out.println(count);
+			tr.commit();
+		}
 		/**
 		 * criteria的条件查询
 		 */
